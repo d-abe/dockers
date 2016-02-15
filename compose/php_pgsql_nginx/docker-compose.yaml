@@ -1,0 +1,28 @@
+# postgres
+postgresql:
+  image: postgres:9.5
+  ports:
+    - "5432:5432"
+  environment:
+    POSTGRES_USER: docker
+    POSTGRES_PASSWORD: docker
+    POSTGRES_DB: docker
+
+# php-phalcon
+phalcon:
+  build: ../../php-phalcon-fpm
+  volumes:
+    - /Users/Shared/Documents/www:/var/www
+  links:
+    - postgresql:db
+
+# nginx
+nginx:
+  build: ../../nginx
+  volumes:
+    - /Users/Shared/Documents/www:/var/www
+    - /Users/Shared/Documents/conf/phalcon_nginx.conf:/etc/nginx/sites-enabled/default
+  volumes_from:
+    - phalcon
+  ports:
+    - "80:80"
