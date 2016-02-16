@@ -8,21 +8,23 @@ postgresql:
     POSTGRES_PASSWORD: docker
     POSTGRES_DB: docker
 
-# php-phalcon
-phalcon:
-  build: ../../php-phalcon-fpm
+# golang
+golang:
+  build: ../../golang
   volumes:
+    - "${ROOT_DIR}/src/go:/go/src/app"
     - "${ROOT_DIR}/www:/var/www"
   links:
     - postgresql:db
+  working_dir: /go/src/app
 
 # nginx
 nginx:
   build: ../../nginx
   volumes:
     - "${ROOT_DIR}/www:/var/www"
-    - "${ROOT_DIR}/conf/phalcon_nginx.conf:/etc/nginx/sites-enabled/default"
-  volumes_from:
-    - phalcon
+    - "${ROOT_DIR}/conf/golang_nginx.conf:/etc/nginx/sites-enabled/default"
+  links:
+    - golang
   ports:
     - "80:80"
