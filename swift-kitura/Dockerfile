@@ -25,12 +25,9 @@ RUN apt-get update \
     && cd pcre2-10.20 \
     && ./configure \
     && make \
-    && make install \
-    && cd .. \
-    && git clone https://github.com/IBM-Swift/Kitura.git \
-    && cd Kitura \
-    && swift build ; \
-    make
+    && make install
+
+WORKDIR /src
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
