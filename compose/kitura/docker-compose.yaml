@@ -1,9 +1,9 @@
 kitura:
   build: ../../swift-kitura
   volumes:
-    - "${ROOT_DIR}/kitura-test:/src"
+    - "${ROOT_DIR}/src/kitura:/src"
   ports:
     - "8090:8090"
   working_dir: /src
   environment:
-    PROJECT_NAME: kitura-test
+    PROJECT_NAME: kitura

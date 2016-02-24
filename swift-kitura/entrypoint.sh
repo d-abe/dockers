@@ -7,8 +7,9 @@ if [ -z "$PROJECT_NAME" ]; then
     exit 1
 fi
 
-mkdir /work
-cp -rf * /work
+ln -s $(pwd)/Sources /work/Sources
+ln -s $(pwd)/Tests /work/Tests
+ln -s $(pwd)/Package.swift /work/Package.swift
 
 cd /work
 
@@ -17,4 +18,4 @@ swift build
 set -e
 
 make
-exec ".build/debug/${PROJECT_NAME}"
+gulp watch
