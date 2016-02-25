@@ -32,20 +32,19 @@ RUN apt-get update \
     && make \
     && make install \
     && npm install -g gulp \
-    && mkdir /work
-
-WORKDIR /work
+    && mkdir /work \
+    && cd /work \
+    && npm install gulp gulp-process
 
 COPY gulpfile.js /work/gulpfile.js
 COPY build.sh /work/build.sh
 COPY Makefile /work/Makefile
 
-RUN npm install gulp gulp-process \
-    && chmod +x /work/build.sh
+RUN chmod +x /work/build.sh
 
 
 WORKDIR /src
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY dev.sh /dev.sh
+RUN chmod +x /dev.sh
+CMD ["/dev.sh"]

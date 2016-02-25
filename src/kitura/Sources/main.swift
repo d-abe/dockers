@@ -7,7 +7,7 @@ let router = Router()
 router.get("/") {
 request, response, next in
 
-    response.status(HttpStatusCode.OK).send("Hello, World!")
+    response.status(HttpStatusCode.OK).send("Hello, World.")
 
     next()
 }
