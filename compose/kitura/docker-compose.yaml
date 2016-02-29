@@ -1,9 +1,23 @@
+# postgres
+postgresql:
+  image: postgres:9.5
+  ports:
+    - "5432:5432"
+  environment:
+    POSTGRES_USER: docker
+    POSTGRES_PASSWORD: docker
+    POSTGRES_DB: docker
+
+# kitura
 kitura:
   build: ../../swift-kitura
   volumes:
-    - "${ROOT_DIR}/src/kitura:/src"
+    - "{$ROOT_DIR}/src/kitura:/src"
+  links:
+    - postgresql:db
   ports:
     - "8090:8090"
   working_dir: /src
   environment:
     PROJECT_NAME: kitura
+    WORKING_DIR: /src

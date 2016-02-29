@@ -13,10 +13,33 @@
 # limitations under the License.
 
 # Makefile
-# This is a makefile that conveniently calls Kitura-net's makefile when Kitura-net is a dependency
-# Should be copied to project's root directory
+# This Makefile is used to build the necessary shims or helpers around C libraries before Swift Package Manager is called.
 
-KITURA_NET_DIR=$(wildcard Packages/Kitura-net-*)
+ROOT_DIR=.
+BUILD_DIR=${ROOT_DIR}/.build/debug
 
-make:
-	make -f ${KITURA_NET_DIR}/Makefile
+# Include where users install header files (i.e. this is where dispatch/dispatch.h and pcre2 should be located).
+INCLUDE_DIR=/usr/local/include
+#detect OS
+UNAME := $(shell uname)
+
+ifeq ($(UNAME),Darwin)
+EXTRA_LINK= -Xlinker -L/usr/local/lib
+else
+EXTRA_LINK=-Xlinker -ldispatch
+endif
+
+all: setup kitura
+
+setup:
+	mkdir -p ${BUILD_DIR}
+
+kitura:
+# Runs the swift build for the right system 
+	swift build -Xcc -fblocks -Xswiftc -I${INCLUDE_DIR} -Xlinker -L${BUILD_DIR} ${EXTRA_LINK}
+
+clean:
+	rm -rf ${BUILD_DIR}
+	mkdir ${BUILD_DIR}
+
+.PHONY: clean

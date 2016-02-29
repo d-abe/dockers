@@ -7,15 +7,15 @@ if [ -z "$PROJECT_NAME" ]; then
     exit 1
 fi
 
-ln -s $(pwd)/Sources /work/Sources
-ln -s $(pwd)/Tests /work/Tests
-ln -s $(pwd)/Package.swift /work/Package.swift
+if [ -z "$WORKING_DIR" ]; then
+    echo >&2 'WORKING_DIR is not specified!'
+    exit 1
+fi
+
+# nfsやVMの共有フォルダだとサブディレクトリが認識されないのでコピーする
+cp -rf * /work
 
 cd /work
-
-set +e
-swift build
-set -e
 
 make
 
