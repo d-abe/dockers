@@ -13,33 +13,40 @@
 # limitations under the License.
 
 # Makefile
-# This Makefile is used to build the necessary shims or helpers around C libraries before Swift Package Manager is called.
 
+UNAME = ${shell uname}
 ROOT_DIR=.
 BUILD_DIR=${ROOT_DIR}/.build/debug
 
-# Include where users install header files (i.e. this is where dispatch/dispatch.h and pcre2 should be located).
-INCLUDE_DIR=/usr/local/include
-#detect OS
-UNAME := $(shell uname)
+CC_FLAGS = -Xcc -fblocks
 
-ifeq ($(UNAME),Darwin)
-EXTRA_LINK= -Xlinker -L/usr/local/lib
-else
-EXTRA_LINK=-Xlinker -ldispatch
+ifeq ($(UNAME), Darwin)
+SWIFTC_FLAGS =  -Xswiftc -I/usr/local/include
+LINKER_FLAGS = -Xlinker -L/usr/local/lib
 endif
 
-all: setup kitura
+all: build
 
-setup:
-	mkdir -p ${BUILD_DIR}
+build:
+	@echo Performing build on $(UNAME)
+ifeq ($(UNAME), Linux)
+	swift build --fetch
+	swift build $(CC_FLAGS) $(SWIFTC_FLAGS) $(LINKER_FLAGS) `bash ${ROOT_DIR}/make_ccflags_for_module_maps`
+else
+	swift build $(CC_FLAGS) $(SWIFTC_FLAGS) $(LINKER_FLAGS)
+endif
 
-kitura:
-# Runs the swift build for the right system 
-	swift build -Xcc -fblocks -Xswiftc -I${INCLUDE_DIR} -Xlinker -L${BUILD_DIR} ${EXTRA_LINK}
+test: build
+	swift test
+
+run: build
+	./.build/debug/${PROJECT_NAME}
+
+refetch:
+	rm -rf Packages
+	swift build --fetch
 
 clean:
-	rm -rf ${BUILD_DIR}
-	mkdir ${BUILD_DIR}
+	swift build --clean
 
-.PHONY: clean
+.PHONY: clean build refetch run test
